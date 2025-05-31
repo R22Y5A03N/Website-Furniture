@@ -42,4 +42,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
+    // Tambahkan relasi untuk feedback dan notifikasi
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
+    
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+    
+    public function unreadNotificationsCount()
+    {
+        return $this->notifications()->where('is_read', false)->count();
+    }
 }

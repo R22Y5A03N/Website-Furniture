@@ -39,3 +39,26 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 Route::get('/collection', [CollectionController::class, 'index'])->name('collection');
+
+// Tambahkan route berikut
+
+// User routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/feedback', [App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback', [App\Http\Controllers\FeedbackController::class, 'index'])->name('feedback.index');
+    
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+});
+// Admin routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Tambahkan route untuk feedback admin
+    Route::get('/feedbacks', [App\Http\Controllers\Admin\FeedbackController::class, 'index'])->name('feedbacks.index');
+    Route::get('/feedbacks/{feedback}', [App\Http\Controllers\Admin\FeedbackController::class, 'show'])->name('feedbacks.show');
+    Route::post('/feedbacks/{feedback}/respond', [App\Http\Controllers\Admin\FeedbackController::class, 'respond'])->name('feedbacks.respond');
+    
+    // Route baru untuk edit dan delete
+    Route::get('/feedbacks/{feedback}/edit', [App\Http\Controllers\Admin\FeedbackController::class, 'edit'])->name('feedbacks.edit');
+    Route::put('/feedbacks/{feedback}', [App\Http\Controllers\Admin\FeedbackController::class, 'update'])->name('feedbacks.update');
+    Route::delete('/feedbacks/{feedback}', [App\Http\Controllers\Admin\FeedbackController::class, 'destroy'])->name('feedbacks.destroy');
+});

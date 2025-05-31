@@ -29,9 +29,51 @@
 </head>
 
 <body class="bg-gray-100 font-sans">
-    <!-- Navigation Bar -->
-    <!-- Navigation Bar -->
+    <!-- Navigation Bar new-->
+    <!-- Modifikasi navbar untuk menambahkan ikon notifikasi -->
 <nav class="fixed top-0 z-50 w-full glassmorphism">
+    <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <div class="flex items-center">
+            <span class="text-3xl font-bold gradient-text">ModernFurn</span>
+        </div>
+        <div class="hidden md:flex space-x-10">
+            <a href="#hero" class="text-gray-800 hover:text-blue-500 transition duration-300">Beranda</a>
+            <a href="{{ route('collection') }}" class="text-gray-800 hover:text-blue-500 transition duration-300">Koleksi</a>
+            <a href="#features" class="text-gray-800 hover:text-blue-500 transition duration-300">Fitur</a>
+            <a href="#testimonials" class="text-gray-800 hover:text-blue-500 transition duration-300">Testimonial</a>
+            <a href="#contact" class="text-gray-800 hover:text-blue-500 transition duration-300">Kontak</a>
+            @auth
+                <!-- Tambahkan ikon notifikasi -->
+                <div class="relative">
+                    <a href="{{ route('notifications.index') }}" class="text-gray-800 hover:text-blue-500 transition duration-300">
+                        <i class="fas fa-bell"></i>
+                        @if(Auth::user()->unreadNotificationsCount() > 0)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                {{ Auth::user()->unreadNotificationsCount() }}
+                            </span>
+                        @endif
+                    </a>
+                </div>
+                <span class="text-gray-800">{{ Auth::user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="text-gray-800 hover:text-blue-500 transition duration-300">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="text-gray-800 hover:text-blue-500 transition duration-300">Login</a>
+                <a href="{{ route('register') }}" class="text-gray-800 hover:text-blue-500 transition duration-300">Register</a>
+            @endauth
+        </div>
+        <div class="md:hidden">
+            <button class="text-gray-800">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+    <!-- Navigation Bar old --> 
+{{-- <nav class="fixed top-0 z-50 w-full glassmorphism">
     <div class="container mx-auto px-6 py-3 flex justify-between items-center">
         <div class="flex items-center">
             <span class="text-3xl font-bold gradient-text">ModernFurn</span>
@@ -59,7 +101,7 @@
             </button>
         </div>
     </div>
-</nav>
+</nav> --}}
 
     <!-- Hero Section -->
     <section id="hero" class="pt-24 bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -371,8 +413,8 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
+    <!-- Contact Section old -->
+    {{-- <section id="contact" class="py-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
         <div class="container mx-auto px-6">
             <h2 class="text-4xl font-bold text-center mb-3">Hubungi Kami</h2>
             <p class="text-gray-100 text-center mb-12 max-w-2xl mx-auto">Tertarik dengan produk kami? Hubungi kami untuk
@@ -381,7 +423,7 @@
             <div class="flex flex-col md:flex-row">
                 <div class="md:w-1/2 mb-10 md:mb-0">
                     <div class="bg-white rounded-2xl p-8 text-gray-800">
-                        <h3 class="text-2xl font-bold mb-6">Kirim Pesan</h3>
+                        <h3 class="text-2xl font-bold mb-6">Kritik/Saran</h3>
                         <form>
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Nama
@@ -445,7 +487,56 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
+
+    {{-- contact section new --}}
+    <!-- Tambahkan di bagian contact section -->
+<section id="contact" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-bold text-center mb-3">Hubungi Kami</h2>
+        <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Punya pertanyaan atau ingin memberikan kritik dan saran? Hubungi kami melalui form di bawah ini.</p>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                    <!-- Form Feedback untuk user yang sudah login -->
+                    <form id="feedbackForm" class="space-y-6">
+                        @csrf
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Kritik & Saran</label>
+                            <textarea name="message" id="message" rows="5" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="Tulis kritik dan saran Anda di sini..."></textarea>
+                            <p id="messageError" class="mt-1 text-sm text-red-600 hidden">Pesan tidak boleh kosong</p>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button type="button" id="submitFeedback" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300">
+                                Kirim Feedback
+                            </button>
+                        </div>
+                    </form>
+                <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                    <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold">Login Diperlukan</h3>
+                            <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 mb-6">Anda perlu login terlebih dahulu untuk dapat mengirim feedback.</p>
+                        <div class="flex flex-col space-y-4">
+                            <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 text-center">
+                                Login
+                            </a>
+                            <p class="text-center text-gray-600">Belum memiliki akun?</p>
+                            <a href="{{ route('register') }}" class="bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-bold py-2 px-6 rounded-full transition duration-300 text-center">
+                                Register
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
@@ -739,6 +830,66 @@
                 });
             });
         });
+        document.addEventListener('DOMContentLoaded', function() {
+        const feedbackForm = document.getElementById('feedbackForm');
+        const submitButton = document.getElementById('submitFeedback');
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const messageInput = document.getElementById('message');
+        const messageError = document.getElementById('messageError');
+        
+        submitButton.addEventListener('click', function() {
+            // Validasi form
+            if (!messageInput.value.trim()) {
+                messageError.classList.remove('hidden');
+                return;
+            }
+            messageError.classList.add('hidden');
+            
+            // Cek apakah user sudah login
+            @auth
+                // Submit form jika sudah login
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("feedback.store") }}';
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                
+                const messageField = document.createElement('input');
+                messageField.type = 'hidden';
+                messageField.name = 'message';
+                messageField.value = messageInput.value;
+                
+                form.appendChild(csrfToken);
+                form.appendChild(messageField);
+                document.body.appendChild(form);
+                form.submit();
+            @else
+                // Tampilkan modal login jika belum login
+                loginModal.classList.remove('hidden');
+            @endauth
+        });
+        
+        // Tutup modal saat tombol close diklik
+        closeLoginModal.addEventListener('click', function() {
+            loginModal.classList.add('hidden');
+        });
+        
+        // Tutup modal saat klik di luar modal
+        loginModal.addEventListener('click', function(e) {
+            if (e.target === loginModal) {
+                loginModal.classList.add('hidden');
+            }
+        });
+    });
+
+
+
+
+        
     </script>
 </body>
 
